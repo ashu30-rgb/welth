@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
 import useFetch from "@/hooks/useFetch";
 import { Check, Pencil, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -31,7 +32,7 @@ const BudgetProgress = ({ initialBudget, currentExpense }) => {
     error
   } = useFetch(updateBudget)
 
-  const handleUpdateBudget = async() => {
+  const handleUpdateBudget = async () => {
     const amount = parseFloat(newBudget);
     if (isNaN(amount) || amount <= 0) {
       toast.error("Please enter a valid amount");
@@ -40,15 +41,15 @@ const BudgetProgress = ({ initialBudget, currentExpense }) => {
     await updateBudgetFn(amount)
   }
 
-  useEffect(()=>{
-    if(updatedBudget?.success){
+  useEffect(() => {
+    if (updatedBudget?.success) {
       setIsEditing(false);
       toast.success("Budget updated successfully");
     }
   }, [updatedBudget]);
 
-  useEffect(()=>{
-    if(error){
+  useEffect(() => {
+    if (error) {
       setIsEditing(false);
       toast.error("Failed to update budget");
     }
@@ -75,10 +76,10 @@ const BudgetProgress = ({ initialBudget, currentExpense }) => {
                   placeholder="Enter Amount"
                   autoFocus
                 />
-                <Button variant="ghost" size="icon" onClick={handleUpdateBudget}>
+                <Button variant="ghost" size="icon" onClick={handleUpdateBudget} disabled={isLoading}>
                   <Check className="h-4 w-4 text-green-500" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={handleCancel}>
+                <Button variant="ghost" size="icon" onClick={handleCancel} disabled={isLoading}>
                   <X className="h-4 w-4 text-red-500" />
                 </Button>
               </div>
@@ -98,7 +99,13 @@ const BudgetProgress = ({ initialBudget, currentExpense }) => {
         </div>
       </CardHeader>
       <CardContent>
-        <p>Card Content</p>
+        {initialBudget &&
+          <div className="space-y-2">
+            <Progress value={percentUsed} extraStyles={percentUsed>=90?"bg-red-500":percentUsed>=75?"bg-yellow-500":"bg-green-500"} />
+              <p className="text-xs text-muted-foreground text-right">
+              {percentUsed.toFixed(1)}% used
+              </p>
+          </div>}
       </CardContent>
     </Card>
   );
