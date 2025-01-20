@@ -1,5 +1,5 @@
-import { inngest } from "@/app/lib/inngest/client";
-import { checkBudgetAlert, helloWorld } from "@/app/lib/inngest/functions";
+import { inngest } from "@/lib/inngest/client";
+import { checkBudgetAlert, helloWorld } from "@/lib/inngest/functions";
 import { serve } from "inngest/next";
 
 // Create an API that serves zero functions
