@@ -96,9 +96,9 @@ export const bulkDeletetransactions = async (transactionIds) => {
       throw new Error("User not found");
     }
 
-    const transactions = await db.transactions.findMany({
+    const transactions = await db.transaction.findMany({
       where: {
-        id: { ind: transactionIds },
+        id: { in: transactionIds },
         userId: user.id,
       },
     });
