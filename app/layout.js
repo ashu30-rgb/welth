@@ -4,7 +4,10 @@ import Header from "@/components/header";
 import { ClerkProvider } from "@clerk/nextjs"; 
 import { Toaster } from "sonner";
 
-const inter = Inter({ subset: ["latin"] })
+const inter = Inter({
+  subsets: ['latin','vietnamese'], // Specify the subset(s)
+  preload: true,      // Preloading enabled
+});
 
 export const metadata = {
   title: "Welth ",
