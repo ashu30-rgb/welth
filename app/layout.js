@@ -6,7 +6,7 @@ import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ['latin','vietnamese'], // Specify the subset(s)
-  preload: true,      // Preloading enabled
+  preload: false,      // Preloading enabled
 });
 
 export const metadata = {
