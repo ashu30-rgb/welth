@@ -51,10 +51,10 @@ export async function getBotResponse(query) {
 
     const history = await getChatHistory();
 
-    const preprocessedHistory = history.map(chat => ({
-        userMessage: chat.userMessage,
-        botMessage: chat.botMessage
-      }));
+    const preprocessedHistory = history.map((chat) => ({
+      userMessage: chat.userMessage,
+      botMessage: chat.botMessage,
+    }));
 
     const prompt = `
     You are a chatbot named Sara that only answers finance-related queries. Use the provided chat history for context. 
@@ -71,7 +71,7 @@ export async function getBotResponse(query) {
     }
 
     Chat history for context:
-    ${JSON.stringify(preprocessedHistory)}
+    ${JSON.stringify(preprocessedHistory, null, 2)}
 
     Query:
     ${query}

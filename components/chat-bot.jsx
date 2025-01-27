@@ -1,5 +1,12 @@
 "use client";
-import { BotMessageSquare, SendHorizontal, X } from "lucide-react";
+import {
+  Bot,
+  BotMessageSquare,
+  Maximize2,
+  SendHorizontal,
+  Shrink,
+  X,
+} from "lucide-react";
 import React, { useEffect, useState } from "react";
 import {
   Tooltip,
@@ -9,9 +16,14 @@ import {
 } from "./ui/tooltip";
 import { getBotResponse, getChatHistory } from "@/actions/chat-bot";
 import { format } from "date-fns";
+import Image from "next/image";
+import { useUser } from "@clerk/nextjs";
 
 const ChatBot = () => {
+  const { user } = useUser();
+  console.log(user);
   const [chatVisible, setChatVisible] = useState(false);
+  const [fullScreen, setFullScreen] = useState(false);
   const [chats, setChats] = useState([]);
   const [query, setQuery] = useState("");
 
@@ -51,11 +63,11 @@ const ChatBot = () => {
   };
 
   const isTodaysChat = (dateString) => {
-    if(dateString){
-        const targetDate = new Date(dateString);
-        const currentDate = new Date();
-        currentDate.setHours(0, 0, 0, 0);
-        return targetDate > currentDate;
+    if (dateString) {
+      const targetDate = new Date(dateString);
+      const currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
+      return targetDate > currentDate;
     }
   };
 
@@ -68,16 +80,33 @@ const ChatBot = () => {
   }, []);
 
   return (
-    <div className="bottom-5 right-5 fixed ">
+    <div
+      className={`fixed z-50 ${fullScreen ? "bottom-0 right-0" : "bottom-5 right-5"}`}
+    >
       {chatVisible ? (
-        <div className="bg-gray-100 h-[480px] w-96">
-          <div className="bg-white shadow-lg rounded-lg w-full max-w-md flex flex-col h-full">
+        <div
+          className={`bg-gray-100 ${fullScreen ? "h-screen w-screen p-10 px-32" : "h-[480px] w-96"}`}
+        >
+          <div className="bg-white shadow-lg rounded-lg w-full max-w-full flex flex-col h-full">
             <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white font-semibold p-3 rounded-t-lg flex justify-between">
               Chatbot
-              <X
-                className="cursor-pointer"
-                onClick={() => setChatVisible(false)}
-              />
+              <div className="flex gap-2 items-center">
+                {fullScreen ? (
+                  <Shrink
+                    className="cursor-pointer"
+                    onClick={() => setFullScreen(false)}
+                  />
+                ) : (
+                  <Maximize2
+                    className="w-5 h-5 cursor-pointer"
+                    onClick={() => setFullScreen(true)}
+                  />
+                )}
+                <X
+                  className="cursor-pointer"
+                  onClick={() => setChatVisible(false)}
+                />
+              </div>
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -85,26 +114,36 @@ const ChatBot = () => {
                 chats.map((chat, index) => {
                   return (
                     <div key={index} className="space-y-2">
-                      <div className="flex justify-end">
+                      <div className="flex justify-end gap-2">
                         <div>
-                          <div className="bg-blue-500 text-white p-2 rounded-lg max-w-64 shadow text-sm">
+                          <div className="bg-blue-500 text-white p-2 rounded-lg max-w-full ms-10 shadow text-sm">
                             {chat.userMessage}
                           </div>
-                          <span className="text-[10px]">
+                          <span className="text-[10px] ms-10">
                             {`${!isTodaysChat(chat?.createdAt) ? format(chat?.createdAt, "PP") : ""} 
-                            ${format(chat?.createdAt??new Date(), "p")}`}
+                            ${format(chat?.createdAt ?? new Date(), "p")}`}
                           </span>
                         </div>
+                        <Image
+                          src={user.imageUrl}
+                          alt="User profile"
+                          className="rounded-full h-8 w-8"
+                          width="40"
+                          height="40"
+                        />
                       </div>
 
-                      <div className="flex justify-start">
+                      <div className="flex justify-start gap-2">
+                      <div className="w-8 h-8">
+                        <Bot height="40" width="40" className="h-8 w-8" />
+                        </div>
                         <div>
-                          <div className="bg-gray-200 p-2 rounded-lg max-w-64 shadow text-sm">
+                          <div className="bg-gray-200 p-2 rounded-lg max-w-full me-10 shadow text-sm">
                             {formatBotResponse(chat.botMessage)}
                           </div>
                           <span className="text-[10px]">
                             {`${!isTodaysChat(chat?.createdAt) ? format(chat?.createdAt, "PP") : ""} 
-                            ${format(chat?.createdAt?? new Date(), "p")}`}
+                            ${format(chat?.createdAt ?? new Date(), "p")}`}
                           </span>
                         </div>
                       </div>
@@ -161,7 +200,10 @@ const ChatBot = () => {
             <TooltipTrigger>
               <div
                 className="bg-gradient-to-br from-blue-600 to-purple-600 p-3 rounded-full cursor-pointer"
-                onClick={() => setChatVisible(true)}
+                onClick={() => {
+                  setChatVisible(true);
+                  setFullScreen(false);
+                }}
               >
                 <BotMessageSquare stroke="#FFFFFF" className="w-9 h-9" />
               </div>
