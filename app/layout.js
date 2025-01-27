@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/header";
 import { ClerkProvider } from "@clerk/nextjs"; 
 import { Toaster } from "sonner";
+import ChatBot from "@/components/chat-bot";
 
 const inter = Inter({
   subsets: ['latin','vietnamese'], // Specify the subset(s)
@@ -29,6 +30,7 @@ export default function RootLayout({ children }) {
               <p>Made with ❤️ by Ashutosh</p>
             </div>
           </footer>
+          <ChatBot/>
         </body>
       </html>
     </ClerkProvider>

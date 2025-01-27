@@ -23,6 +23,7 @@ model User {
   transactions Transaction[]
   accounts     Account[]
   budgets      Budget[]
+  chats        Chat[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
@@ -104,4 +105,17 @@ model Budget {
 
   @@index([userId])
   @@map("budgets")
+}
+
+model Chat {
+  id          String   @id @default(uuid())
+  userMessage String
+  botMessage  String
+  userId      String   @unique
+  User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@map("chats")
 }
