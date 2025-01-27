@@ -1,13 +1,14 @@
 "use client";
 import { BotMessageSquare, SendHorizontal, X } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
-import { getBotResponse } from "@/actions/chat-bot";
+import { getBotResponse, getChatHistory } from "@/actions/chat-bot";
+import { format } from "date-fns";
 
 const ChatBot = () => {
   const [chatVisible, setChatVisible] = useState(false);
@@ -17,14 +18,17 @@ const ChatBot = () => {
   const callChatBot = async () => {
     const userMessage = query;
 
-    setChats((prevChats) => [...prevChats, { user: userMessage, bot: "" }]);
+    setChats((prevChats) => [
+      ...prevChats,
+      { userMessage: userMessage, botMessage: "", createdAt: new Date() },
+    ]);
     setQuery("");
 
     const botResponse = await getBotResponse(userMessage);
 
     setChats((prevChats) => {
       const updatedChats = [...prevChats]; // Create a shallow copy of the chats array
-      updatedChats[updatedChats.length - 1].bot = botResponse.response; // Update the last chat object
+      updatedChats[updatedChats.length - 1].botMessage = botResponse.response; // Update the last chat object
       return updatedChats; // Return the updated array
     });
   };
@@ -46,6 +50,23 @@ const ChatBot = () => {
     });
   };
 
+  const isTodaysChat = (dateString) => {
+    if(dateString){
+        const targetDate = new Date(dateString);
+        const currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0);
+        return targetDate > currentDate;
+    }
+  };
+
+  useEffect(() => {
+    async function fetchChatHistory() {
+      const chats = await getChatHistory();
+      setChats(chats);
+    }
+    fetchChatHistory();
+  }, []);
+
   return (
     <div className="bottom-5 right-5 fixed ">
       {chatVisible ? (
@@ -65,14 +86,26 @@ const ChatBot = () => {
                   return (
                     <div key={index} className="space-y-2">
                       <div className="flex justify-end">
-                        <div className="bg-blue-500 text-white p-2 rounded-lg max-w-64 shadow text-sm">
-                          {chat.user}
+                        <div>
+                          <div className="bg-blue-500 text-white p-2 rounded-lg max-w-64 shadow text-sm">
+                            {chat.userMessage}
+                          </div>
+                          <span className="text-[10px]">
+                            {`${!isTodaysChat(chat?.createdAt) ? format(chat?.createdAt, "PP") : ""} 
+                            ${format(chat?.createdAt??new Date(), "p")}`}
+                          </span>
                         </div>
                       </div>
 
                       <div className="flex justify-start">
-                        <div className="bg-gray-200 p-2 rounded-lg max-w-64 shadow text-sm">
-                          {formatBotResponse(chat.bot)}
+                        <div>
+                          <div className="bg-gray-200 p-2 rounded-lg max-w-64 shadow text-sm">
+                            {formatBotResponse(chat.botMessage)}
+                          </div>
+                          <span className="text-[10px]">
+                            {`${!isTodaysChat(chat?.createdAt) ? format(chat?.createdAt, "PP") : ""} 
+                            ${format(chat?.createdAt?? new Date(), "p")}`}
+                          </span>
                         </div>
                       </div>
                     </div>
