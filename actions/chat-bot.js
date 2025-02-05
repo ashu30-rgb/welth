@@ -51,10 +51,11 @@ export async function getBotResponse(query) {
 
     const history = await getChatHistory();
 
-    const preprocessedHistory = history.map((chat) => ({
-      userMessage: chat.userMessage,
-      botMessage: chat.botMessage,
-    }));
+    let formattedHistory = "";
+    history.forEach((chat) => {
+      formattedHistory += `User: ${chat.userMessage}\n`;
+      formattedHistory += `Assistant: ${chat.botMessage}\n`;
+    });
 
     const prompt = `
     You are a chatbot named Sara that only answers finance-related queries. Use the provided chat history for context. 
@@ -64,6 +65,7 @@ export async function getBotResponse(query) {
     - If the query is not finance-related, respond that this is not a finance-related question.
     - If the query is a greeting or asks for your name, greet the user gently and introduce yourself.
     - If there's no relevant data in the history for the query, handle it independently.
+    - Don't ask for too much information, try to answer with minimal info available.
 
     Respond strictly in the following JSON format:
     {
@@ -71,10 +73,11 @@ export async function getBotResponse(query) {
     }
 
     Chat history for context:
-    ${JSON.stringify(preprocessedHistory, null, 2)}
+    ${formattedHistory}
 
-    Query:
+     Query:
     ${query}
+    Assistant:
     `;
 
     const result = await model.generateContent(prompt);
