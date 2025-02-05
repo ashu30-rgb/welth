@@ -85,7 +85,7 @@ const ChatBot = () => {
     >
       {chatVisible ? (
         <div
-          className={`bg-gray-100 ${fullScreen ? "h-screen w-screen p-10 px-32" : "h-[480px] w-96"}`}
+          className={`bg-gray-100 ${fullScreen ? "h-screen w-screen p-4 lg:p-10 lg:px-32" : "h-[480px] w-80 md:w-96"}`}
         >
           <div className="bg-white shadow-lg rounded-lg w-full max-w-full flex flex-col h-full">
             <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white font-semibold p-3 rounded-t-lg flex justify-between">
