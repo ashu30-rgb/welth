@@ -7,7 +7,7 @@ import {
   Shrink,
   X,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Tooltip,
   TooltipContent,
@@ -21,7 +21,7 @@ import { useUser } from "@clerk/nextjs";
 
 const ChatBot = () => {
   const { user } = useUser();
-  console.log(user);
+  const divRef = useRef(null);
   const [chatVisible, setChatVisible] = useState(false);
   const [fullScreen, setFullScreen] = useState(false);
   const [chats, setChats] = useState([]);
@@ -79,6 +79,10 @@ const ChatBot = () => {
     fetchChatHistory();
   }, []);
 
+  useEffect(()=>{
+    divRef?.current?.scrollIntoView({ behavior: 'smooth' })
+  },[fullScreen, chatVisible])
+
   return (
     <div
       className={`fixed z-50 ${fullScreen ? "bottom-0 right-0" : "bottom-5 right-5"}`}
@@ -109,7 +113,7 @@ const ChatBot = () => {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div ref={divRef} className="flex-1 overflow-y-auto p-4 space-y-4">
               {chats?.length > 0 ? (
                 chats.map((chat, index) => {
                   return (
